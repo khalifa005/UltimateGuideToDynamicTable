@@ -45,7 +45,7 @@ export class AppComponent implements OnInit {
   ngOnInit() {
     this.configuration = { ...DefaultConfig };
 
-    this.configuration.isLoading = true;
+    // this.configuration.isLoading = true;
     this.configuration.showContextMenu = false;
     // this.configuration.resizeColumn = true;
     // this.configuration.columnReorder = true;
@@ -57,18 +57,18 @@ export class AppComponent implements OnInit {
     this.configuration.checkboxes = true;
     this.configuration.serverPagination = true;
     this.configuration.horizontalScroll = true;
-    this.configuration.isLoading = true;
+    // this.configuration.isLoading = false;
 
-    this.data = apiDataItems;
+    this.apiCustomColumns = apiColumns;
     //because our api won't match with the ngx table format
     this.prepareDynamicColumns();
-    this.apiCustomColumns = apiColumns;
+    this.data = apiDataItems;
 
     this.paginationParam = {
       ...this.paginationParam,
-      limit: 10,
+      limit: 5,
       offset: 1,
-      count: 100,
+      count: this.apiCustomColumns.length,
     };
 
 
@@ -84,9 +84,9 @@ export class AppComponent implements OnInit {
 
         let mappedColumn: Columns = {
           key: column.key,
-          cssClass: { includeHeader: false, name: 'fw-bold mt-1 mb-1 pt-1 pb-1' },
+          // cssClass: { includeHeader: false, name: 'fw-bold mt-1 mb-1 pt-1 pb-1' },
           title: column.title,
-          width: column.width,//'5%'
+          // width: column.width,//'5%'
           cellTemplate: this.selectTemplateForKey(column.cellTemplateKey),
           // I will use custom filter - this to make the filter template next to the header title
           // headerActionTemplate: this.customHeaderActionTemplate,
