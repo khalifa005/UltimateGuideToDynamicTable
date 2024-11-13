@@ -1,0 +1,40 @@
+::ng-deep .nb-theme-default nb-accordion-item-header {
+    position: relative;
+    border-bottom-width: 1px;
+    border-bottom-style: solid;
+    border-bottom-color: #edf1f7;
+    color: white !important;
+    background-color: rgb(150, 190, 204) !important;
+    // background-color: lightblue !important;
+    font-family: Open Sans, sans-serif;
+    font-size: .9375rem;
+    font-weight: 750;
+    line-height: 1.5rem;
+    // padding: 1.25rem;
+    padding: 0.25rem !important;
+}
+
+
+
+:host ::ng-deep .ngx-table__table--striped > tbody tr:nth-of-type(odd) {
+    background: rgba(206, 229, 243, 0.4) !important;
+    // background-color: rgba(206, 229, 243, 0.4) !important;
+  }
+  
+  :host ::ng-deep .ngx-table__header {
+    background: rgba(63, 134, 202, 0.4) !important; // Customize the color and opacity
+    color: #ffffff; // Optionally, adjust the text color for contrast
+    // padding: 2px 3px  !important;
+  }
+  
+  :host ::ng-deep .ngx-table__header th {
+    background: rgba(63, 134, 202, 0.4) !important; // Ensures each header cell has the same color
+    color: #ffffff; // Ensures text color contrast
+    // padding: 2px 3px  !important;
+    // border-bottom: 2px solid #141515 !important; // Customize the border color if needed
+  }
+  
+  :host ::ng-deep .ngx-table__table--tiny > thead > tr > th {
+    border-bottom: 1px solid #e7e9ed  !important;
+    padding: 2px 3px  !important;
+  }
