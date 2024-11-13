@@ -1,1 +1,10 @@
 /* You can add global styles to this file, and also import other style files */
+
+// framework component themes (styles tied to theme variables)
+@import '@nebular/theme/styles/globals';
+
+@import "node_modules/bootstrap/scss/functions";
+@import "node_modules/bootstrap/scss/variables";
+@import "node_modules/bootstrap/scss/mixins.scss";
+@import "node_modules/ngx-easy-table/style.scss";
+@import "~bootstrap/dist/css/bootstrap.rtl.min.css";
