@@ -5,22 +5,184 @@
     <nb-card>
       <nb-card-body>
 
-        <nb-accordion class="mb-4 mt-4">
+  
+        <nb-accordion multi class="mt-3 mb-3">
           <nb-accordion-item>
-            <nb-accordion-item-header>Product Details</nb-accordion-item-header>
+            <nb-accordion-item-header>
+              Advanced filters
+            </nb-accordion-item-header>
             <nb-accordion-item-body>
-              Item Content
+              <div class="row mt-0">
+                <div class="col-md-6 col-12 mb-0 mt-0" *ngFor="let column of apiCustomColumns">
+
+                  <ng-container>
+                    <div [ngSwitch]="column.filterType">
+                      <ng-container *ngSwitchCase="2">
+                        <label [for]="column.id" class="d-block">{{ column.title }}</label>
+                        <ng-container *ngIf="!column.filterOptions">
+                          <input type="text" nbInput fullWidth fieldSize="small" disabled class="form-control mt-1 mb-1"
+                            [id]="column.id" [name]="column.key">
+                        </ng-container>
+                        <ng-container *ngIf="column.filterOptions">
+                          <nb-select [size]="'small'" fullWidth [placeholder]=" 'select options' "
+                            class="form-control p-0 mt-1 mb-1" [id]="column.id" [name]="column.key"
+                            (selectedChange)="onFilterChange(column.key, $event)">
+                            <nb-option value="">
+                              {{ 'select options' }}
+                            </nb-option>
+                            <nb-option *ngFor="let x of column.filterOptions" [value]="x.id">
+                              {{ x.name }}
+                            </nb-option>
+                          </nb-select>
+                        </ng-container>
+                      </ng-container>
+                      <ng-container *ngSwitchCase="1">
+                        <label [for]="column.id">{{ column.title }}</label>
+                        <input type="text" nbInput fullWidth fieldSize="small" class="form-control mt-1 mb-1"
+                          [id]="column.id" [name]="column.key"
+                          [placeholder]="column.placeholder"
+                          (input)="onFilterChange(column.key, $event.target.value)">
+                      </ng-container>
+                      <ng-container *ngSwitchCase="3">
+                        <label [for]="column.id">{{ column.title }}</label>
+                        <input type="text" nbInput fullWidth fieldSize="small" class="form-control mt-1 mb-1"
+                          [id]="column.id" [name]="column.key"
+                          [placeholder]="column.placeholder"
+                          (input)="onFilterChange(column.key, $event.target.value)">
+                      </ng-container>
+                      <ng-container *ngSwitchDefault>
+                        <label [for]="column.id">{{ column.title }}</label>
+                        <input type="text" nbInput fullWidth fieldSize="small" disabled class="form-control mt-1 mb-1"
+                          [id]="column.id" [name]="column.key">
+                      </ng-container>
+                    </div>
+                  </ng-container>
+                </div>
+              </div>
+
+              <!-- Dynamic Checkbox List -->
+              <div class="form-group mt-3 mb-3">
+                <label *ngFor="let column of apiCustomColumns" class="form-checkbox form-inline me-3">
+                  <input type="checkbox" [checked]="checked.has(column.key)" (change)="toggle(column.key)" />
+                  <em class="form-icon"></em> {{ column.title }}
+                </label>
+              </div>
+
+              <!-- Reset and Search Buttons -->
+              <div class="d-flex justify-content-center mt-3 mb-3">
+                <button nbButton size="small" hero status="info" class="mx-1" (click)="filterClicked()">
+                  Search
+                </button>
+                <button nbButton size="small" hero status="warning" (click)="resetFilters()">
+                  Reset
+                </button>
+              </div>
+
             </nb-accordion-item-body>
           </nb-accordion-item>
         </nb-accordion>
-    
-        <ngx-table [configuration]="configuration" [columns]="columns" [data]="data"
+
+        <!-- <ngx-table [configuration]="configuration" [columns]="columns" [data]="data"
           tableClass="table table-striped table-bordered table-hover">
-        </ngx-table>
-    
+        </ngx-table> -->
+
       </nb-card-body>
     </nb-card>
   </nb-layout-column>
 
   <nb-layout-footer>Contact us</nb-layout-footer>
 </nb-layout>
+
+
+<!-- Text Cell Template -->
+<ng-template #textCellTemplate let-value let-row="row">
+  <p ngxStopPropgation *ngIf="value" class="fw-bold text-wrap">
+    {{ value }}
+  </p>
+</ng-template>
+
+<!-- HTML Cell Template -->
+<ng-template #htmlCellTemplate let-value let-row="row">
+  <div>
+    <p *ngIf="value && value !== ' '" class="text-wrap" [innerHtml]="value | sanitizeHtml"></p>
+  </div>
+</ng-template>
+
+<!-- Date Template -->
+<ng-template #dateTemplate let-value let-row="row">
+  <p>{{ value | date: 'dd-MM-yyyy HH:mm' }}</p>
+</ng-template>
+
+<!-- Multi Info Cell Template -->
+<ng-template #multiInfoCellTemplate let-value let-row="row">
+  <div>
+    <p class="small"><strong>التسجيل</strong>
+      <span class="badge" style="background-color: #c4d7fa; color: #000;">
+        <i class="far fa-clock"></i> {{ row.registrationDate | date: 'dd-MM-yyyy HH:mm' }}
+      </span>
+    </p>
+    <p class="small"><strong>المتوقع</strong>
+      <span class="badge" style="background-color: #c4d7fa; color: #000;">
+        <i class="far fa-clock"></i> {{ row.expectedDate | date: 'dd-MM-yyyy HH:mm' }}
+      </span>
+    </p>
+    <p class="small"><strong>الوضع</strong>
+      <span class="badge" style="background-color: #c4d7fa; color: #000;">
+        <i class="far fa-clock"></i> {{ row.statusDate | date: 'dd-MM-yyyy HH:mm' }}
+      </span>
+    </p>
+    <p class="small"><strong>العملية</strong>
+      <span class="badge" style="background-color: #c4d7fa; color: #000;">
+        <i class="far fa-clock"></i> {{ row.operationDate | date: 'dd-MM-yyyy HH:mm' }}
+      </span>
+    </p>
+  </div>
+</ng-template>
+
+<!-- Coordinate Status Icon Template -->
+<ng-template #coordinateStatusIconTemplate let-value let-row="row">
+  <button nbButton hero size="small" status="info" (click)="openFormDialog()">
+    <nb-icon [options]="{ animation: { type: 'flip in Y' } }" icon="map-outline"></nb-icon>
+  </button>
+</ng-template>
+
+<!-- Media Indicator Icon Template -->
+<ng-template #mediaIndicatorIconTemplate let-value let-row="row">
+  <button nbButton hero size="small" status="info">
+    Files
+  </button>
+</ng-template>
+
+<!-- New Line Template -->
+<ng-template #newLineTemplate let-value let-row="row" let-columnKey="columnKey">
+  <ng-container *ngFor="let item of displayNewLine(columnKey, row)">
+    <p ngxStopPropgation *ngIf="row[item.trim()]" class="d-flex align-items-center my-1">
+      <span class="badge text-white me-0" style="background-color: rgb(113, 194, 248);">
+        {{ row[item.trim()] }}
+      </span>
+      <img src="assets/images/icons/maintenance-icon-18900.png" alt="Icon" style="width: 24px; height: 24px;" />
+    </p>
+  </ng-container>
+</ng-template>
+
+<!-- Action Icon Template -->
+<ng-template #actionIconTemplate let-value let-row="row">
+  <button nbButton size="small" status="danger">
+    <nb-icon [options]="{ animation: { type: 'flip in Y' } }" icon="trash-2-outline"></nb-icon>
+    Delete
+  </button>
+</ng-template>
+
+<ng-template #selectAllTemplate let-changeEvent>
+  <label class="ngx-form-checkbox">
+    <input type="checkbox" (input)="changeEvent()" />
+    <i class="ngx-form-icon custom-checkbox-color" id="selectAllCheckbox"></i>
+  </label>
+</ng-template>
+
+<ng-template #summaryTemplateRef let-total="total" let-limit="limit" let-page="page">
+  <th colspan="5">
+    <span class="mb-2">Total items</span>
+    <span class="mb-2">: {{ paginationParam.count }} </span>
+  </th>
+</ng-template>

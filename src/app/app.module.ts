@@ -1,11 +1,10 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-
-import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { TableModule } from 'ngx-easy-table';
-import { NbAccordionModule, NbCardModule, NbLayoutModule, NbThemeModule } from '@nebular/theme';
+import { NbAccordionModule, NbCardModule, NbCheckboxModule, NbIconModule, NbInputModule, NbLayoutModule, NbSelectModule, NbThemeModule } from '@nebular/theme';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 @NgModule({
   declarations: [
@@ -19,7 +18,12 @@ import { NbAccordionModule, NbCardModule, NbLayoutModule, NbThemeModule } from '
     NbThemeModule.forRoot(),
     NbLayoutModule,
     NbAccordionModule,
-    AppRoutingModule
+    FormsModule,
+    ReactiveFormsModule,
+    NbInputModule,
+    NbSelectModule,
+    NbIconModule,
+    NbCheckboxModule,
   ],
   providers: [],
   bootstrap: [AppComponent]
