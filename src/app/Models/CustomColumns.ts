@@ -9,10 +9,10 @@ export class CustomColumn {
     order: number;
     filterType: string;
     cellTemplateKey: string | null;
-    relatedFields: string | null;
+    relatedFields: { label: string; fieldKey: string }[] | null;
     filterOptions: any[] | null;
-    inlineCSS: string | null; // New property for inline CSS styles
-    styleClasses: string | null; // New property for additional style classes
+    inlineCSS: string | null; // Inline CSS for column styling
+    styleClasses: string | null; // Additional CSS classes for column styling
 
     constructor(
         id: string,
@@ -23,7 +23,7 @@ export class CustomColumn {
         order: number = 0,
         filterType: string = "input",
         cellTemplateKey: string | null = null,
-        relatedFields: string | null = null,
+        relatedFields: { label: string; fieldKey: string }[] | null = null,
         filterOptions: any[] | null = null,
         inlineCSS: string | null = null,
         styleClasses: string | null = null
@@ -42,4 +42,3 @@ export class CustomColumn {
         this.styleClasses = styleClasses;
     }
 }
-

@@ -47,12 +47,12 @@ export class AppComponent implements OnInit {
 
     // this.configuration.isLoading = true;
     this.configuration.showContextMenu = false;
-    // this.configuration.resizeColumn = true;
-    // this.configuration.columnReorder = true;
-    this.configuration.fixedColumnWidth = true;
-    this.configuration.tableLayout.hover = false;
+    this.configuration.resizeColumn = false;
+    this.configuration.columnReorder = true;
+    this.configuration.fixedColumnWidth = false;
+    this.configuration.tableLayout.hover = true;
     this.configuration.tableLayout.striped = true;
-    this.configuration.tableLayout.style = STYLE.BIG;
+    this.configuration.tableLayout.style = STYLE.NORMAL;
     this.configuration.tableLayout.borderless = false;
     this.configuration.checkboxes = true;
     this.configuration.serverPagination = true;
@@ -104,24 +104,24 @@ export class AppComponent implements OnInit {
   selectTemplateForKey(templateKey: string): TemplateRef<any> {
     // Return specific templates based on template keys; use default template for general cases
     switch (templateKey) {
-      case 'text':
+      case 'textCellTemplate':
         return this.textCellTemplate;
-      case 'html':
+      case 'htmlCellTemplate':
         return this.htmlCellTemplate;
-      case 'date':
+      case 'dateCellTemplate':
         return this.dateTemplate;
-      case 'multiInfo':
+      case 'multiInfoCellTemplate':
         return this.multiInfoCellTemplate;
-      case 'media':
+      case 'mediaCellTemplate':
         return this.mediaIndicatorIconTemplate;
-      case 'action':
+      case 'actionCellTemplate':
         return this.actionIconTemplate;
       default:
         return this.textCellTemplate;
     }
   }
 
-  displyNewLine(columnKey: any, row: any): string[] {
+  displyNewLinex(columnKey: any, row: any): string[] {
 
     let matchedColumn = this.apiCustomColumns.find(x => x.key === columnKey);
     
@@ -133,6 +133,13 @@ export class AppComponent implements OnInit {
       return [];
     }
   }
+
+  displayNewLine(columnKey: any, row: any): { label: string; fieldKey: string }[] {
+    let matchedColumn = this.apiCustomColumns.find(x => x.key === columnKey);
+
+    // Return relatedFields directly if available, otherwise an empty array
+    return matchedColumn?.relatedFields || [];
+}
 
   rowSelected(row: any): void {
     if (row && row.id) {

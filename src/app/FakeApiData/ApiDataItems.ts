@@ -8,7 +8,8 @@ export const apiDataItems = [
         productCategory: "Electronics",
         productName: "Smartphone",
         quantity: 2,
-        price: 499.99,
+        originalPrice: 549.99,
+        priceAfterDiscount: 499.99,
         orderDate: "2024-10-15T10:45:00",
         status: "Pending",
         shippingAddress: `<div style="font-size: 14px; color: #333;">
@@ -25,7 +26,8 @@ export const apiDataItems = [
         productCategory: "Home Appliances",
         productName: "Air Conditioner",
         quantity: 1,
-        price: 299.99,
+        originalPrice: 329.99,
+        priceAfterDiscount: 299.99,
         orderDate: "2024-10-16T13:30:00",
         status: "Shipped",
         shippingAddress: `<div style="font-size: 14px; color: #333;">
@@ -42,7 +44,8 @@ export const apiDataItems = [
         productCategory: "Fashion",
         productName: "Leather Jacket",
         quantity: 1,
-        price: 150.0,
+        originalPrice: 180.0,
+        priceAfterDiscount: 150.0,
         orderDate: "2024-10-17T09:15:00",
         status: "Delivered",
         shippingAddress: `<div style="font-size: 14px; color: #333;">
@@ -59,7 +62,8 @@ export const apiDataItems = [
         productCategory: "Beauty & Personal Care",
         productName: "Hair Dryer",
         quantity: 1,
-        price: 45.99,
+        originalPrice: 59.99,
+        priceAfterDiscount: 45.99,
         orderDate: "2024-10-18T15:20:00",
         status: "Cancelled",
         shippingAddress: `<div style="font-size: 14px; color: #333;">
@@ -76,7 +80,8 @@ export const apiDataItems = [
         productCategory: "Books",
         productName: "The Great Gatsby",
         quantity: 3,
-        price: 10.99,
+        originalPrice: 12.99,
+        priceAfterDiscount: 10.99,
         orderDate: "2024-10-19T18:45:00",
         status: "Delivered",
         shippingAddress: `<div style="font-size: 14px; color: #333;">
@@ -93,7 +98,8 @@ export const apiDataItems = [
         productCategory: "Sports & Outdoors",
         productName: "Yoga Mat",
         quantity: 1,
-        price: 20.0,
+        originalPrice: 25.0,
+        priceAfterDiscount: 20.0,
         orderDate: "2024-10-20T11:00:00",
         status: "Shipped",
         shippingAddress: `<div style="font-size: 14px; color: #333;">
