@@ -1,12 +1,12 @@
 <nb-layout>
-  <nb-layout-header fixed>Awesome Dynamic Table</nb-layout-header>
-  <nb-layout-column>
-    <nb-card>
+  <nb-layout-header class="custom-header" fixed>Awesome Dynamic Table</nb-layout-header>
+  <nb-layout-column class="m-2 p-2">
+    <nb-card size="giant" >
       <nb-card-body>
   
         <nb-accordion class="mt-3 mb-3">
           <nb-accordion-item>
-            <nb-accordion-item-header>
+            <nb-accordion-item-header class="custom-header">
               Advanced filters
             </nb-accordion-item-header>
             <nb-accordion-item-body>
@@ -15,7 +15,7 @@
 
                   <ng-container>
                     <div [ngSwitch]="column.filterType">
-                      <ng-container *ngSwitchCase="2">
+                      <ng-container *ngSwitchCase="'dropdown'">
                         <label [for]="column.id" class="d-block">{{ column.title }}</label>
                         <ng-container *ngIf="!column.filterOptions">
                           <input type="text" nbInput fullWidth fieldSize="small" disabled class="form-control mt-1 mb-1"
@@ -34,14 +34,16 @@
                           </nb-select>
                         </ng-container>
                       </ng-container>
-                      <ng-container *ngSwitchCase="1">
+
+                      <ng-container *ngSwitchCase="'input'">
                         <label [for]="column.id">{{ column.title }}</label>
                         <input type="text" nbInput fullWidth fieldSize="small" class="form-control mt-1 mb-1"
                           [id]="column.id" [name]="column.key"
                           [placeholder]="column.placeholder"
                           (input)="onFilterChange(column.key, $event.target.value)">
                       </ng-container>
-                      <ng-container *ngSwitchCase="3">
+                  
+                      <ng-container *ngSwitchCase="'date'">
                         <label [for]="column.id">{{ column.title }}</label>
                         <input type="text" nbInput fullWidth fieldSize="small" class="form-control mt-1 mb-1"
                           [id]="column.id" [name]="column.key"
@@ -91,6 +93,19 @@
   <nb-layout-footer>Contact us</nb-layout-footer>
 </nb-layout>
 
+<ng-template #selectAllTemplate let-changeEvent>
+  <label class="ngx-form-checkbox">
+    <input type="checkbox" (input)="changeEvent()" />
+    <i class="ngx-form-icon custom-checkbox-color" id="selectAllCheckbox"></i>
+  </label>
+</ng-template>
+
+<ng-template #summaryTemplateRef let-total="total" let-limit="limit" let-page="page">
+  <th colspan="13">
+    <span class="mb-2">Total items</span>
+    <span class="mb-2">: {{ paginationParam.count }} </span>
+  </th>
+</ng-template>
 
 <!-- Text Cell Template -->
 <ng-template #textCellTemplate let-value let-row let-rowIndex="rowIndex" let-column="column">
@@ -102,17 +117,25 @@
 <!-- HTML Cell Template -->
 <ng-template #htmlCellTemplate let-value let-row let-rowIndex="rowIndex" let-column="column">
   <div>
-    <!-- <p *ngIf="row[column.key] && row[column.key] !== ' '" class="text-wrap" [innerHtml]="row[column.key] | sanitizeHtml"></p> -->
+    <p *ngIf="row[column.key] && row[column.key] !== ' '"  [innerHtml]="row[column.key] | sanitizeHtml"></p>
   </div>
 </ng-template>
 
 <!-- Date Template -->
 <ng-template #dateTemplate let-value let-row let-rowIndex="rowIndex" let-column="column">
-  <!-- <p>{{ row[column.key] | date: 'dd-MM-yyyy HH:mm' }}</p> -->
+  <p>{{ row[column.key] | date: 'dd-MM-yyyy HH:mm' }}</p>
 </ng-template>
 
 <!-- Multi Info Cell Template -->
 <ng-template #multiInfoCellTemplate let-value let-row let-rowIndex="rowIndex" let-column="column">
+  <!-- <ng-container *ngFor="let item of displayNewLine(columnKey, row)">
+    <p *ngIf="row[item.trim()]" class="d-flex align-items-center my-1">
+      <span class="badge text-white me-0" style="background-color: rgb(113, 194, 248);">
+        {{ row[item.trim()] }}
+      </span>
+      <img src="assets/images/icons/maintenance-icon-18900.png" alt="Icon" style="width: 24px; height: 24px;" />
+    </p>
+  </ng-container> -->
   <div>
     <p class="small"><strong>التسجيل</strong>
       <span class="badge" style="background-color: #c4d7fa; color: #000;">
@@ -137,30 +160,12 @@
   </div>
 </ng-template>
 
-<!-- Coordinate Status Icon Template -->
-<ng-template #coordinateStatusIconTemplate let-value let-row let-rowIndex="rowIndex" let-column="column">
-  <button nbButton hero size="small" status="info" (click)="openFormDialog()">
-    <nb-icon [options]="{ animation: { type: 'flip in Y' } }" icon="map-outline"></nb-icon>
-  </button>
-</ng-template>
 
 <!-- Media Indicator Icon Template -->
 <ng-template #mediaIndicatorIconTemplate let-value let-row let-rowIndex="rowIndex" let-column="column">
   <button nbButton hero size="small" status="info">
     Files
   </button>
-</ng-template>
-
-<!-- New Line Template -->
-<ng-template #newLineTemplate let-value let-row let-rowIndex="rowIndex" let-column="column" let-columnKey="columnKey">
-  <!-- <ng-container *ngFor="let item of displayNewLine(columnKey, row)">
-    <p *ngIf="row[item.trim()]" class="d-flex align-items-center my-1">
-      <span class="badge text-white me-0" style="background-color: rgb(113, 194, 248);">
-        {{ row[item.trim()] }}
-      </span>
-      <img src="assets/images/icons/maintenance-icon-18900.png" alt="Icon" style="width: 24px; height: 24px;" />
-    </p>
-  </ng-container> -->
 </ng-template>
 
 <!-- Action Icon Template -->
@@ -170,16 +175,3 @@
   </button>
 </ng-template>
 
-<ng-template #selectAllTemplate let-changeEvent>
-  <label class="ngx-form-checkbox">
-    <input type="checkbox" (input)="changeEvent()" />
-    <i class="ngx-form-icon custom-checkbox-color" id="selectAllCheckbox"></i>
-  </label>
-</ng-template>
-
-<ng-template #summaryTemplateRef let-total="total" let-limit="limit" let-page="page">
-  <th colspan="5">
-    <span class="mb-2">Total items</span>
-    <span class="mb-2">: {{ paginationParam.count }} </span>
-  </th>
-</ng-template>

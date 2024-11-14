@@ -52,7 +52,7 @@ export class AppComponent implements OnInit {
     this.configuration.fixedColumnWidth = true;
     this.configuration.tableLayout.hover = false;
     this.configuration.tableLayout.striped = true;
-    this.configuration.tableLayout.style = STYLE.TINY;
+    this.configuration.tableLayout.style = STYLE.BIG;
     this.configuration.tableLayout.borderless = false;
     this.configuration.checkboxes = true;
     this.configuration.serverPagination = true;
@@ -132,10 +132,6 @@ export class AppComponent implements OnInit {
     else {
       return [];
     }
-  }
-
-  sanitizeHtml(html: string): SafeHtml {
-    return this.sanitizer.bypassSecurityTrustHtml(html);
   }
 
   rowSelected(row: any): void {
