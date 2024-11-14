@@ -85,7 +85,7 @@
 
         <!-- [pagination]="paginationParam" -->
         <ngx-table #table [id]="1" [configuration]="configuration" [summaryTemplate]="summaryTemplateRef"
-          [selectAllTemplate]="selectAllTemplate" [data]="data" [columns]="columns" (event)="eventEmitted($event)">
+          [selectAllTemplate]="selectAllTemplate" [data]="data" [columns]="columns" (event)="handleTableRowClick($event)">
         </ngx-table>
 
       </nb-card-body>

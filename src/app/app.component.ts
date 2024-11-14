@@ -13,39 +13,55 @@ import { apiColumns } from './FakeApiData/ApiColumns';
   styleUrls: ['./app.component.scss']
 })
 export class AppComponent implements OnInit {
-
   @ViewChild('textCellTemplate', { static: true }) textCellTemplate: TemplateRef<any>;
   @ViewChild('htmlCellTemplate', { static: true }) htmlCellTemplate: TemplateRef<any>;
   @ViewChild('dateTemplate', { static: true }) dateTemplate: TemplateRef<any>;
   @ViewChild('multiInfoCellTemplate', { static: true }) multiInfoCellTemplate: TemplateRef<any>;
   @ViewChild('mediaTemplate', { static: true }) mediaIndicatorIconTemplate: TemplateRef<any>;
   @ViewChild('actionTemplate', { static: true }) actionIconTemplate: TemplateRef<any>;
-
   @ViewChild('table') table: APIDefinition;
 
   public configuration: Config;
   public columns: Columns[];
   public columnsCopy: Columns[];
   public data: any[];
-
   public selectedRowsIds: number[] = [];
-  paginationParam: any;
-  // public customPagingParameters: CustomPagingParameters = new CustomPagingParameters();
-  // apiCustomColumns!: CustomColumn[];
-
+  // paginationParam: any;
+  paginationParam: any = {
+    limit: 5,
+    offset: 1,
+    count: 0,
+    sortColumnKey: '',
+    sortOrder: ''
+  };
   filterValues: { [key: string]: any } = {};
   public paginationTotalItems: number;
   checked = new Set<string>();
-
   public apiCustomColumns: any[];
 
   constructor(private sanitizer: DomSanitizer) {
   }
 
   ngOnInit() {
-    this.configuration = { ...DefaultConfig };
+    this.initializeTableConfig();
 
+    this.apiCustomColumns = apiColumns;
+    //because our api won't match with the ngx table format
+    this.prepareDynamicColumns();
+
+    this.data = apiDataItems;
+    this.paginationParam = {
+      ...this.paginationParam,
+      limit: 5,
+      offset: 1,
+      count: this.apiCustomColumns.length,
+    };
+  }
+
+  initializeTableConfig(): void {
+    this.configuration = { ...DefaultConfig };
     // this.configuration.isLoading = true;
+
     this.configuration.showContextMenu = false;
     this.configuration.resizeColumn = false;
     this.configuration.columnReorder = true;
@@ -56,48 +72,20 @@ export class AppComponent implements OnInit {
     this.configuration.tableLayout.borderless = false;
     this.configuration.checkboxes = true;
     this.configuration.serverPagination = true;
-    this.configuration.horizontalScroll = true;
-    // this.configuration.isLoading = false;
-
-    this.apiCustomColumns = apiColumns;
-    //because our api won't match with the ngx table format
-    this.prepareDynamicColumns();
-    this.data = apiDataItems;
-
-    this.paginationParam = {
-      ...this.paginationParam,
-      limit: 5,
-      offset: 1,
-      count: this.apiCustomColumns.length,
-    };
-
-
-    this.configuration.isLoading = false;
+    this.configuration.horizontalScroll = false;
   }
 
   prepareDynamicColumns() {
-    let mappedColumns: Columns[] = [];
+    this.columns = this.apiCustomColumns.map(column => ({
+      key: column.key,
+      title: column.title,
+      cellTemplate: this.selectTemplateForKey(column.cellTemplateKey)
+      // cssClass: { includeHeader: false, name: 'fw-bold mt-1 mb-1 pt-1 pb-1' },
+      // I will use custom filter - this to make the filter template next to the header title
+      // headerActionTemplate: this.customHeaderActionTemplate,
+    }));
 
-    if (this.apiCustomColumns) {
-
-      this.apiCustomColumns.forEach(column => {
-
-        let mappedColumn: Columns = {
-          key: column.key,
-          // cssClass: { includeHeader: false, name: 'fw-bold mt-1 mb-1 pt-1 pb-1' },
-          title: column.title,
-          // width: column.width,//'5%'
-          cellTemplate: this.selectTemplateForKey(column.cellTemplateKey),
-          // I will use custom filter - this to make the filter template next to the header title
-          // headerActionTemplate: this.customHeaderActionTemplate,
-        };
-
-        mappedColumns.push(mappedColumn);
-      });
-    }
-
-    this.columns = mappedColumns;
-    this.columnsCopy = mappedColumns;
+    this.columnsCopy = this.columns;
     this.initializeCheckedColumns();
   }
 
@@ -124,7 +112,7 @@ export class AppComponent implements OnInit {
   displyNewLinex(columnKey: any, row: any): string[] {
 
     let matchedColumn = this.apiCustomColumns.find(x => x.key === columnKey);
-    
+
     if (matchedColumn?.relatedFields) {
       let result = matchedColumn?.relatedFields.split(',');
       return result;
@@ -139,7 +127,7 @@ export class AppComponent implements OnInit {
 
     // Return relatedFields directly if available, otherwise an empty array
     return matchedColumn?.relatedFields || [];
-}
+  }
 
   rowSelected(row: any): void {
     if (row && row.id) {
@@ -164,73 +152,6 @@ export class AppComponent implements OnInit {
     this.columns = this.columnsCopy.filter((column) => this.checked.has(column.key));
   }
 
-  // Handle the click event on a table row
-  eventEmitted(event: { event: string; value: any }): void {
-    if (event.event === 'onSelectAll') {
-
-    }
-
-    if (event.event === 'onCheckboxSelect') {
-    }
-
-    if (event.event !== 'onClick') {
-      this.parseEvent(event);
-    }
-  }
-
-  //to get the sorting and pagination  event of the grid
-  private parseEvent(obj: any): void {
-
-    if (obj.event === "onPagination") {
-
-      this.paginationParam.limit = obj.value.limit ? obj.value.limit : this.paginationParam.limit;
-      // this.customPagingParameters.pageSize = obj.value.limit ? obj.value.limit : this.paginationParam.limit;
-      this.paginationParam.offset = obj.value.page ? obj.value.page : this.paginationParam.offset;
-      // this.customPagingParameters.pageIndex = obj.value.page ? obj.value.page : 1;
-
-      this.paginationParam = { ...this.paginationParam };
-    }
-
-    if (obj.event === "onOrder") {
-
-      this.paginationParam.sort = !!obj.value.key ? obj.value.key : this.paginationParam.sort;
-      let matchedSortItem = this.apiCustomColumns.find(x => x.key === this.paginationParam.sort);
-
-      // this.customPagingParameters.sortKey = matchedSortItem?.key!;
-
-      this.paginationParam.order = !!obj.value.order ? obj.value.order : this.paginationParam.order;
-      // this.customPagingParameters.sortOrder = this.paginationParam.order;
-
-    }
-
-    if (obj.event === "onCheckboxSelect") {
-
-      if (obj.value && this.data && obj.value.row && obj.value.row.id) {
-
-        const doesIdExisit = this.selectedRowsIds.includes(obj.value.row.id);
-        if (doesIdExisit) {
-          this.selectedRowsIds = this.selectedRowsIds.filter(code => code !== obj.value.row.id);
-        }
-        else {
-          this.selectedRowsIds.push(obj.value.row.id);
-        }
-
-      }
-    }
-
-    if (obj.event === "onSelectAll") {
-
-      if (obj.value && this.data) {
-        this.selectedRowsIds = this.data.map(item => item.id as number);
-      }
-      else {
-        this.selectedRowsIds = [];
-      }
-    }
-
-
-  }
-
   onFilterChange(key: string, value: any) {
     this.filterValues[key] = value;
     console.log('filterValues:', this.filterValues);
@@ -246,8 +167,8 @@ export class AppComponent implements OnInit {
       if (value) {
 
         keyValueListConverted
-        .addItem(key,
-          `${matchedFilterColumnItem?.filterFieldDBName ?? key} = '${value}' `);
+          .addItem(key,
+            `${matchedFilterColumnItem?.filterFieldDBName ?? key} = '${value}' `);
 
       } else {
         keyValueListConverted
@@ -275,6 +196,66 @@ export class AppComponent implements OnInit {
     this.filterClicked(); // Optionally, re-apply filters if needed
   }
 
+  // Handles click events on a table row
+  handleTableRowClick(event: { event: string; value: any }): void {
+    switch (event.event) {
+      case 'onSelectAll':
+        this.handleSelectAll(event.value);
+        break;
+      case 'onCheckboxSelect':
+        this.handleCheckboxSelect(event.value);
+        break;
+      case 'onClick':
+        break;
+      default:
+        this.processGridEvent(event);
+        break;
+    }
+  }
 
+  // Processes sorting and pagination events for the grid
+  private processGridEvent(event: { event: string; value: any }): void {
+    switch (event.event) {
+      case 'onPagination':
+        this.updatePagination(event.value);
+        break;
+      case 'onOrder':
+        this.updateSorting(event.value);
+        break;
+    }
+  }
+
+  // Updates pagination parameters based on the event data
+  private updatePagination(data: any): void {
+    this.paginationParam.limit = data.limit || this.paginationParam.limit;
+    this.paginationParam.offset = data.page || this.paginationParam.offset;
+    this.paginationParam = { ...this.paginationParam };
+  }
+
+  // Updates sorting parameters based on the event data
+  private updateSorting(data: any): void {
+    this.paginationParam.sortColumnKey = data.key || this.paginationParam.sortColumnKey;
+    const matchedSortItem = this.apiCustomColumns.find(col => col.key === this.paginationParam.sort);
+    this.paginationParam.sortOrder = data.order || this.paginationParam.sortOrder;
+  }
+
+  // Handles selection of a single row checkbox
+  private handleCheckboxSelect(data: any): void {
+    if (data?.row?.id) {
+      const rowId = data.row.id;
+      const idIndex = this.selectedRowsIds.indexOf(rowId);
+
+      if (idIndex !== -1) {
+        this.selectedRowsIds.splice(idIndex, 1); // Deselect row
+      } else {
+        this.selectedRowsIds.push(rowId); // Select row
+      }
+    }
+  }
+
+  // Handles selection or deselection of all rows
+  private handleSelectAll(data: any): void {
+    this.selectedRowsIds = data ? this.data.map(item => item.id as number) : [];
+  }
 
 }
