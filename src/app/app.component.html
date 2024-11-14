@@ -22,7 +22,7 @@
                             [id]="column.id" [name]="column.key">
                         </ng-container>
                         <ng-container *ngIf="column.filterOptions">
-                          <nb-select [size]="'small'" fullWidth [placeholder]=" 'select options' "
+                          <nb-select [(ngModel)]="filterValues[column.key]" [size]="'small'" fullWidth [placeholder]=" 'select options' "
                             class="form-control p-0 mt-1 mb-1" [id]="column.id" [name]="column.key"
                             (selectedChange)="onFilterChange(column.key, $event)">
                             <nb-option value="">
@@ -36,15 +36,27 @@
                       </ng-container>
 
                       <ng-container *ngSwitchCase="'input'">
-                        <label [for]="column.id">{{ column.title }}</label>
-                        <input type="text" nbInput fullWidth fieldSize="small" class="form-control mt-1 mb-1"
-                          [id]="column.id" [name]="column.key" [placeholder]="column.placeholder"
-                          (input)="onFilterChange(column.key, $event.target.value)">
+
+                        <ng-container *ngIf="column.relatedFields?.length">
+                          <div *ngFor="let field of column.relatedFields">
+                            <label [for]="field.fieldKey">{{ field.label }}</label>
+                            <input  [(ngModel)]="filterValues[field.fieldKey]" type="text" nbInput fullWidth fieldSize="small" class="form-control mt-1 mb-1"
+                              [id]="field.fieldKey" (input)="onFilterChange(field.fieldKey, $event.target.value)">
+                          </div>
+                        </ng-container>
+
+                        <ng-container *ngIf="!column.relatedFields || column.relatedFields?.length == 0 ">
+                          <label [for]="column.id">{{ column.title }}</label>
+                          <input  [(ngModel)]="filterValues[column.key]" type="text" nbInput fullWidth fieldSize="small" class="form-control mt-1 mb-1"
+                            [id]="column.id" [name]="column.key" [placeholder]="column.placeholder"
+                            (input)="onFilterChange(column.key, $event.target.value)">
+                        </ng-container>
+
                       </ng-container>
 
                       <ng-container *ngSwitchCase="'date'">
                         <label [for]="column.id">{{ column.title }}</label>
-                        <input nbInput fullWidth fieldSize="small" placeholder="{{ column.placeholder }}"
+                        <input  [(ngModel)]="filterValues[column.key]" nbInput fullWidth fieldSize="small" placeholder="{{ column.placeholder }}"
                           [nbDatepicker]="datePicker" class="form-control mt-1 mb-1" [id]="column.id"
                           [name]="column.key" (dateInput)="onFilterChange(column.key, $event.target.value)">
                         <nb-datepicker #datePicker></nb-datepicker>
@@ -52,7 +64,7 @@
 
                       <ng-container *ngSwitchDefault>
                         <label [for]="column.id">{{ column.title }}</label>
-                        <input type="text" nbInput fullWidth fieldSize="small" disabled class="form-control mt-1 mb-1"
+                        <input  [(ngModel)]="filterValues[column.key]" type="text" nbInput fullWidth fieldSize="small" disabled class="form-control mt-1 mb-1"
                           [id]="column.id" [name]="column.key">
                       </ng-container>
                     </div>
@@ -85,7 +97,8 @@
 
         <!-- [pagination]="paginationParam" -->
         <ngx-table #table [id]="1" [configuration]="configuration" [summaryTemplate]="summaryTemplateRef"
-          [selectAllTemplate]="selectAllTemplate" [data]="data" [columns]="columns" [pagination]="paginationParam"  (event)="handleTableRowClick($event)">
+          [selectAllTemplate]="selectAllTemplate" [data]="data" [columns]="columns" [pagination]="paginationParam"
+          (event)="handleTableRowClick($event)">
         </ngx-table>
 
       </nb-card-body>
@@ -134,7 +147,7 @@
 
 <!-- Multi Info Cell Template -->
 <ng-template #multiInfoCellTemplate let-value let-row let-rowIndex="rowIndex" let-column="column">
-  <ng-container *ngFor="let item of displayNewLine(column.key, row)">
+  <ng-container *ngFor="let item of handleNestedFields(column.key, row)">
     <p *ngIf="row[item.fieldKey]" class="mt-1 mb-0 small d-flex justify-content-between">
       {{ item.label }}
       <span class="badge mx-1" style="background-color: #ffffff; color: #000;">

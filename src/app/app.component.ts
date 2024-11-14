@@ -1,7 +1,6 @@
 import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, TemplateRef, ViewChild } from '@angular/core';
 import { Config, Columns, DefaultConfig, APIDefinition, STYLE, API } from 'ngx-easy-table';
-import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
-import { KeyValueList } from './Models/KeyValueList';
+import { DomSanitizer } from '@angular/platform-browser';
 import { apiDataItems } from './FakeApiData/ApiDataItems';
 import { apiColumns } from './FakeApiData/ApiColumns';
 
@@ -24,7 +23,6 @@ export class AppComponent implements OnInit, AfterViewInit {
   public columnsCopy: Columns[];
   public data: any[];
   public selectedRowsIds: number[] = [];
-  // paginationParam: any;
   paginationParam: any = {
     limit: 5,
     offset: 0,
@@ -52,18 +50,16 @@ export class AppComponent implements OnInit, AfterViewInit {
   }
 
   ngAfterViewInit(): void {
-
     this.table.apiEvent({
       type: API.setPaginationDisplayLimit,
       value: this.paginationParam.limit,
     });
-
     this.cdr.detectChanges();
   }
+  
   initializeTableConfig(): void {
     this.configuration = { ...DefaultConfig };
     this.configuration.isLoading = true;
-
     this.configuration.showContextMenu = false;
     this.configuration.resizeColumn = false;
     this.configuration.columnReorder = true;
@@ -81,8 +77,8 @@ export class AppComponent implements OnInit, AfterViewInit {
     this.columns = this.apiCustomColumns.map(column => ({
       key: column.key,
       title: column.title,
-      cellTemplate: this.selectTemplateForKey(column.cellTemplateKey)
-      // cssClass: { includeHeader: false, name: 'fw-bold mt-1 mb-1 pt-1 pb-1' },
+      cellTemplate: this.selectTemplateBasedOnKey(column.cellTemplateKey),
+      cssClass: { includeHeader: false, name: column.styleClasses ?? column.inlineCSS },
       // I will use custom filter - this to make the filter template next to the header title
       // headerActionTemplate: this.customHeaderActionTemplate,
     }));
@@ -91,7 +87,7 @@ export class AppComponent implements OnInit, AfterViewInit {
     this.initializeCheckedColumns();
   }
 
-  selectTemplateForKey(templateKey: string): TemplateRef<any> {
+  selectTemplateBasedOnKey(templateKey: string): TemplateRef<any> {
     // Return specific templates based on template keys; use default template for general cases
     switch (templateKey) {
       case 'textCellTemplate':
@@ -109,20 +105,7 @@ export class AppComponent implements OnInit, AfterViewInit {
     }
   }
 
-  displyNewLinex(columnKey: any, row: any): string[] {
-
-    let matchedColumn = this.apiCustomColumns.find(x => x.key === columnKey);
-
-    if (matchedColumn?.relatedFields) {
-      let result = matchedColumn?.relatedFields.split(',');
-      return result;
-    }
-    else {
-      return [];
-    }
-  }
-
-  displayNewLine(columnKey: any, row: any): { label: string; fieldKey: string }[] {
+  handleNestedFields(columnKey: any, row: any): { label: string; fieldKey: string }[] {
     let matchedColumn = this.apiCustomColumns.find(x => x.key === columnKey);
 
     // Return relatedFields directly if available, otherwise an empty array
@@ -189,56 +172,25 @@ export class AppComponent implements OnInit, AfterViewInit {
     this.paginationParam= { ...this.paginationParam };
     this.configuration.isLoading = false;
     this.cdr.detectChanges();
-
-    // this.cdr.detectChanges();
-
-  }
-
-  filterClickedxx(): void {
-    const keyValueListConverted = new KeyValueList();
-
-    Object.entries(this.filterValues).forEach(([key, value]) => {
-
-      let matchedFilterColumnItem = this.apiCustomColumns.find(x => x.key === key)
-
-      if (value) {
-
-        keyValueListConverted
-          .addItem(key,
-            `${matchedFilterColumnItem?.filterFieldDBName ?? key} = '${value}' `);
-
-      } else {
-        keyValueListConverted
-          .addItem(key, ``);
-      }
-    });
-
-    let dynamicFilters = keyValueListConverted;
-    console.log('dynamicFilters', dynamicFilters);
-
   }
 
   resetFilters(): void {
     this.filterValues = {};  // Clear filter values
+    // Reset related field filters, if any
+    this.apiCustomColumns.forEach(column => {
+      if (column.relatedFields?.length) {
+          column.relatedFields.forEach((field:any) => {
+              this.filterValues[field.fieldKey] = '';
+          });
+      } else {
+          this.filterValues[column.key] = '';
+      }
+  });
+
     this.initializeCheckedColumns();
     this.paginationParam.offset = 1; // Reset to first page
     this.filterClicked(); // Apply reset filters
     this.columns = [...this.columnsCopy];  // Restore all columns to be visible
-  }
-
-  resetFiltersxx(): void {
-    this.filterValues = {};  // Clear the filter values
-    this.apiCustomColumns.forEach(column => {
-      // Reset individual filters if needed
-      const element = document.getElementById(column.id) as HTMLInputElement;
-      if (element) {
-        element.value = '';  // Clear the input field
-      }
-    });
-    console.log('Filters reset:', this.filterValues);
-    this.initializeCheckedColumns();
-    this.columns = [...this.columnsCopy];  // Restore all columns to be visible
-    this.filterClicked(); // Optionally, re-apply filters if needed
   }
 
   // Handles click events on a table row
@@ -276,9 +228,7 @@ export class AppComponent implements OnInit, AfterViewInit {
     this.paginationParam.offset = data.page || this.paginationParam.offset;
     this.paginationParam = { ...this.paginationParam };
     const params = `_limit=${this.paginationParam.limit}&_page=${this.paginationParam.offset}`; // see https://github.com/typicode/json-server
-
     this.filterClicked(); // Refresh data with new pagination
-
   }
 
   // Updates sorting parameters based on the event data
