@@ -1,7 +1,5 @@
-import { Component, OnInit, TemplateRef, ViewChild } from '@angular/core';
-import { Config, Columns, DefaultConfig, APIDefinition, STYLE } from 'ngx-easy-table';
-import { CustomColumn } from './Models/CustomColumns';
-import { CustomPagingParameters } from './Models/CustomPagingParameters';
+import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, TemplateRef, ViewChild } from '@angular/core';
+import { Config, Columns, DefaultConfig, APIDefinition, STYLE, API } from 'ngx-easy-table';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { KeyValueList } from './Models/KeyValueList';
 import { apiDataItems } from './FakeApiData/ApiDataItems';
@@ -10,15 +8,15 @@ import { apiColumns } from './FakeApiData/ApiColumns';
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
   styleUrls: ['./app.component.scss']
 })
-export class AppComponent implements OnInit {
+export class AppComponent implements OnInit, AfterViewInit {
   @ViewChild('textCellTemplate', { static: true }) textCellTemplate: TemplateRef<any>;
   @ViewChild('htmlCellTemplate', { static: true }) htmlCellTemplate: TemplateRef<any>;
-  @ViewChild('dateTemplate', { static: true }) dateTemplate: TemplateRef<any>;
+  @ViewChild('dateCellTemplate', { static: true }) dateTemplate: TemplateRef<any>;
   @ViewChild('multiInfoCellTemplate', { static: true }) multiInfoCellTemplate: TemplateRef<any>;
-  @ViewChild('mediaTemplate', { static: true }) mediaIndicatorIconTemplate: TemplateRef<any>;
-  @ViewChild('actionTemplate', { static: true }) actionIconTemplate: TemplateRef<any>;
+  @ViewChild('actionCellTemplate', { static: true }) actionIconTemplate: TemplateRef<any>;
   @ViewChild('table') table: APIDefinition;
 
   public configuration: Config;
@@ -29,8 +27,8 @@ export class AppComponent implements OnInit {
   // paginationParam: any;
   paginationParam: any = {
     limit: 5,
-    offset: 1,
-    count: 0,
+    offset: 0,
+    count: -1,
     sortColumnKey: '',
     sortOrder: ''
   };
@@ -39,7 +37,8 @@ export class AppComponent implements OnInit {
   checked = new Set<string>();
   public apiCustomColumns: any[];
 
-  constructor(private sanitizer: DomSanitizer) {
+  constructor(private sanitizer: DomSanitizer,
+    private readonly cdr: ChangeDetectorRef,) {
   }
 
   ngOnInit() {
@@ -49,18 +48,21 @@ export class AppComponent implements OnInit {
     //because our api won't match with the ngx table format
     this.prepareDynamicColumns();
 
-    this.data = apiDataItems;
-    this.paginationParam = {
-      ...this.paginationParam,
-      limit: 5,
-      offset: 1,
-      count: this.apiCustomColumns.length,
-    };
+    this.filterClicked(); // Initialize data with pagination
   }
 
+  ngAfterViewInit(): void {
+
+    this.table.apiEvent({
+      type: API.setPaginationDisplayLimit,
+      value: this.paginationParam.limit,
+    });
+
+    this.cdr.detectChanges();
+  }
   initializeTableConfig(): void {
     this.configuration = { ...DefaultConfig };
-    // this.configuration.isLoading = true;
+    this.configuration.isLoading = true;
 
     this.configuration.showContextMenu = false;
     this.configuration.resizeColumn = false;
@@ -100,8 +102,6 @@ export class AppComponent implements OnInit {
         return this.dateTemplate;
       case 'multiInfoCellTemplate':
         return this.multiInfoCellTemplate;
-      case 'mediaCellTemplate':
-        return this.mediaIndicatorIconTemplate;
       case 'actionCellTemplate':
         return this.actionIconTemplate;
       default:
@@ -158,6 +158,43 @@ export class AppComponent implements OnInit {
   }
 
   filterClicked(): void {
+    this.configuration.isLoading = true;
+
+    // Filter data based on filter values
+    const filteredData = apiDataItems.filter(item => {
+      // Loop over each key-value pair in the filterValues object
+      return Object.entries(this.filterValues).every(([key, value]) => {
+        // Assert that `key` is a property of `item`
+        const typedKey = key as keyof typeof item;
+    
+        //in case related data like Price get the related data vales
+
+        // If a filter value exists, check if it matches the item's property value
+        return value 
+          ? item[typedKey]?.toString().toLowerCase() == value.toString().toLowerCase() 
+          : true; // If no filter value, include the item by default
+      });
+    });
+  
+    // Update pagination count based on filtered data length
+    this.paginationParam.count = filteredData.length;
+    // this.paginationParam.limit = this.paginationParam.limit;
+  
+    // Apply pagination to the filtered data
+    this.data = filteredData.slice(
+      (this.paginationParam.offset - 1) * this.paginationParam.limit,
+      this.paginationParam.offset * this.paginationParam.limit
+    );
+    
+    this.paginationParam= { ...this.paginationParam };
+    this.configuration.isLoading = false;
+    this.cdr.detectChanges();
+
+    // this.cdr.detectChanges();
+
+  }
+
+  filterClickedxx(): void {
     const keyValueListConverted = new KeyValueList();
 
     Object.entries(this.filterValues).forEach(([key, value]) => {
@@ -182,6 +219,14 @@ export class AppComponent implements OnInit {
   }
 
   resetFilters(): void {
+    this.filterValues = {};  // Clear filter values
+    this.initializeCheckedColumns();
+    this.paginationParam.offset = 1; // Reset to first page
+    this.filterClicked(); // Apply reset filters
+    this.columns = [...this.columnsCopy];  // Restore all columns to be visible
+  }
+
+  resetFiltersxx(): void {
     this.filterValues = {};  // Clear the filter values
     this.apiCustomColumns.forEach(column => {
       // Reset individual filters if needed
@@ -230,13 +275,29 @@ export class AppComponent implements OnInit {
     this.paginationParam.limit = data.limit || this.paginationParam.limit;
     this.paginationParam.offset = data.page || this.paginationParam.offset;
     this.paginationParam = { ...this.paginationParam };
+    const params = `_limit=${this.paginationParam.limit}&_page=${this.paginationParam.offset}`; // see https://github.com/typicode/json-server
+
+    this.filterClicked(); // Refresh data with new pagination
+
   }
 
   // Updates sorting parameters based on the event data
   private updateSorting(data: any): void {
     this.paginationParam.sortColumnKey = data.key || this.paginationParam.sortColumnKey;
-    const matchedSortItem = this.apiCustomColumns.find(col => col.key === this.paginationParam.sort);
     this.paginationParam.sortOrder = data.order || this.paginationParam.sortOrder;
+    this.sortData();
+    this.filterClicked(); // Refresh data with new pagination
+  }
+
+  sortData(): void {
+    const sortKey = this.paginationParam.sortColumnKey as keyof typeof apiDataItems[0];
+    const sortOrder = this.paginationParam.sortOrder === 'asc' ? 1 : -1;
+  
+    apiDataItems.sort((a, b) => {
+      if (a[sortKey] < b[sortKey]) return -1 * sortOrder;
+      if (a[sortKey] > b[sortKey]) return 1 * sortOrder;
+      return 0;
+    });
   }
 
   // Handles selection of a single row checkbox

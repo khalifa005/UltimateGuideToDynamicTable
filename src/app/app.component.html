@@ -28,7 +28,7 @@
                             <nb-option value="">
                               {{ 'select options' }}
                             </nb-option>
-                            <nb-option *ngFor="let x of column.filterOptions" [value]="x.id">
+                            <nb-option *ngFor="let x of column.filterOptions" [value]="x.name">
                               {{ x.name }}
                             </nb-option>
                           </nb-select>
@@ -85,7 +85,7 @@
 
         <!-- [pagination]="paginationParam" -->
         <ngx-table #table [id]="1" [configuration]="configuration" [summaryTemplate]="summaryTemplateRef"
-          [selectAllTemplate]="selectAllTemplate" [data]="data" [columns]="columns" (event)="handleTableRowClick($event)">
+          [selectAllTemplate]="selectAllTemplate" [data]="data" [columns]="columns" [pagination]="paginationParam"  (event)="handleTableRowClick($event)">
         </ngx-table>
 
       </nb-card-body>
@@ -123,7 +123,7 @@
 </ng-template>
 
 <!-- Date Template -->
-<ng-template #dateTemplate let-value let-row let-rowIndex="rowIndex" let-column="column">
+<ng-template #dateCellTemplate let-value let-row let-rowIndex="rowIndex" let-column="column">
   <p class="small">
     <span class="badge" style="background-color: #c4d7fa; color: #000;">
       <i class="far fa-clock"></i> {{ row[column.key] | date: 'dd-MM-yyyy HH:mm' }}
@@ -144,16 +144,8 @@
 </ng-template>
 
 
-
-<!-- Media Indicator Icon Template -->
-<ng-template #mediaIndicatorIconTemplate let-value let-row let-rowIndex="rowIndex" let-column="column">
-  <button nbButton hero size="small" status="info">
-    Files
-  </button>
-</ng-template>
-
 <!-- Action Icon Template -->
-<ng-template #actionIconTemplate let-value let-row let-rowIndex="rowIndex" let-column="column">
+<ng-template #actionCellTemplate let-value let-row let-rowIndex="rowIndex" let-column="column">
   <button nbButton size="small" status="danger">
     Delete
   </button>
