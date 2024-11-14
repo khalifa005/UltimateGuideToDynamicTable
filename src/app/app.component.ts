@@ -1,6 +1,5 @@
 import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, TemplateRef, ViewChild } from '@angular/core';
 import { Config, Columns, DefaultConfig, APIDefinition, STYLE, API } from 'ngx-easy-table';
-import { DomSanitizer } from '@angular/platform-browser';
 import { apiDataItems } from './FakeApiData/ApiDataItems';
 import { apiColumns } from './FakeApiData/ApiColumns';
 
@@ -34,18 +33,18 @@ export class AppComponent implements OnInit, AfterViewInit {
   public paginationTotalItems: number;
   checked = new Set<string>();
   public apiCustomColumns: any[];
+  public apiData: any[];
 
-  constructor(private sanitizer: DomSanitizer,
-    private readonly cdr: ChangeDetectorRef,) {
+  constructor(private readonly cdr: ChangeDetectorRef) {
   }
 
   ngOnInit() {
-    this.initializeTableConfig();
+    this.apiData = apiDataItems;
 
+    this.initializeTableConfig();
     this.apiCustomColumns = apiColumns;
     //because our api won't match with the ngx table format
     this.prepareDynamicColumns();
-
     this.filterClicked(); // Initialize data with pagination
   }
 
@@ -56,7 +55,7 @@ export class AppComponent implements OnInit, AfterViewInit {
     });
     this.cdr.detectChanges();
   }
-  
+
   initializeTableConfig(): void {
     this.configuration = { ...DefaultConfig };
     this.configuration.isLoading = true;
@@ -144,7 +143,7 @@ export class AppComponent implements OnInit, AfterViewInit {
     this.configuration.isLoading = true;
 
     // Filter data based on filter values
-    const filteredData = apiDataItems.filter(item => {
+    const filteredData = this.apiData.filter(item => {
       // Loop over each key-value pair in the filterValues object
       return Object.entries(this.filterValues).every(([key, value]) => {
         // Assert that `key` is a property of `item`
@@ -240,10 +239,10 @@ export class AppComponent implements OnInit, AfterViewInit {
   }
 
   sortData(): void {
-    const sortKey = this.paginationParam.sortColumnKey as keyof typeof apiDataItems[0];
+    const sortKey = this.paginationParam.sortColumnKey as keyof typeof this.apiData[0];
     const sortOrder = this.paginationParam.sortOrder === 'asc' ? 1 : -1;
   
-    apiDataItems.sort((a, b) => {
+    this.apiData.sort((a, b) => {
       if (a[sortKey] < b[sortKey]) return -1 * sortOrder;
       if (a[sortKey] > b[sortKey]) return 1 * sortOrder;
       return 0;
@@ -268,5 +267,12 @@ export class AppComponent implements OnInit, AfterViewInit {
   private handleSelectAll(data: any): void {
     this.selectedRowsIds = data ? this.data.map(item => item.id as number) : [];
   }
+
+  deleteRow(rowId: number): void {
+    // Filter out the row with the matching ID from the data array
+    this.apiData = this.apiData.filter(row => row.id !== rowId);
+
+   this.filterClicked(); 
+}
 
 }

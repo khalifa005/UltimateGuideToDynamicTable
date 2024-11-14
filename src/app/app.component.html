@@ -159,7 +159,7 @@
 
 <!-- Action Icon Template -->
 <ng-template #actionCellTemplate let-value let-row let-rowIndex="rowIndex" let-column="column">
-  <button nbButton size="small" status="danger">
+  <button nbButton size="small" status="danger" (click)="deleteRow(row.id)">
     Delete
   </button>
 </ng-template>
