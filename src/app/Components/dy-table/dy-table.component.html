@@ -135,10 +135,8 @@
 
 <!-- status Template -->
 <ng-template #statusCellTemplate let-value let-row let-rowIndex="rowIndex" let-column="column">
-  <p [style]="row[column.key] | statusBadge">
-    <span >
+  <p >
      {{  row[column.key] }}
-    </span>
   </p>
 
 </ng-template>
