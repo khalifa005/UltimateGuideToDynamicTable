@@ -1,7 +1,5 @@
 # UltimateGuideToDynamicTable
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 16.1.8. It provides a robust, flexible, and easy-to-use dynamic table solution for Angular applications.
-
 ## Overview
 
 The **UltimateGuideToDynamicTable** project is a comprehensive toolkit for creating dynamic, data-driven tables in Angular. It simplifies the implementation of advanced table features such as dynamic column definitions, sorting, filtering, paging, and data binding.
