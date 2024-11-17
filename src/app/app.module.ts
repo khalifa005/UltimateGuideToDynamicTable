@@ -7,12 +7,14 @@ import { NbAccordionModule, NbButtonModule, NbCardModule, NbCheckboxModule, NbIc
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { SanitizeHtmlPipe } from './pipes/SanitizeHtmlPipe';
 import { CategoryNamePipe } from './pipes/CategoryNamePipe';
+import { DyTableComponent } from './Components/dy-table/dy-table.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     SanitizeHtmlPipe,
-    CategoryNamePipe
+    CategoryNamePipe,
+    DyTableComponent
   ],
   imports: [
     BrowserModule,
