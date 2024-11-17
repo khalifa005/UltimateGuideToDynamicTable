@@ -5,16 +5,19 @@ import { AppComponent } from './app.component';
 import { TableModule } from 'ngx-easy-table';
 import { NbAccordionModule, NbButtonModule, NbCardModule, NbCheckboxModule, NbIconModule, NbInputModule, NbLayoutModule, NbSelectModule, NbThemeModule } from '@nebular/theme';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { SanitizeHtmlPipe } from './pipes/SanitizeHtmlPipe';
-import { CategoryNamePipe } from './pipes/CategoryNamePipe';
+import { SanitizeHtmlPipe } from './Pipes/SanitizeHtmlPipe';
+import { CategoryNamePipe } from './Pipes/CategoryNamePipe';
 import { DyTableComponent } from './Components/dy-table/dy-table.component';
+import { StatusBadgePipe } from './Pipes/StatusBadgePipe';
 
 @NgModule({
   declarations: [
     AppComponent,
+    DyTableComponent,
+
     SanitizeHtmlPipe,
     CategoryNamePipe,
-    DyTableComponent
+    StatusBadgePipe,
   ],
   imports: [
     BrowserModule,

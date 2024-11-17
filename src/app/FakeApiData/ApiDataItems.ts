@@ -12,7 +12,7 @@ export const apiDataItems = [
         priceAfterDiscount: 499.99,
         orderDate: "2024-10-15T10:45:00",
         status: "Pending",
-        shippingAddress: `<div style="font-size: 14px; color: #333;">
+        shippingAddress: `<div style="font-size: 14px; color: #333; background-color: #e3f2fd; padding: 10px;">
                             123 Main St<br>
                             Springfield, IL
                           </div>`,
@@ -30,7 +30,7 @@ export const apiDataItems = [
         priceAfterDiscount: 299.99,
         orderDate: "2024-10-16T13:30:00",
         status: "Shipped",
-        shippingAddress: `<div style="font-size: 14px; color: #333;">
+        shippingAddress: `<div style="font-size: 14px; color: #333; background-color: #e3f2fd; padding: 10px;">
                             456 Oak St<br>
                             Chicago, IL
                           </div>`,
@@ -48,7 +48,7 @@ export const apiDataItems = [
         priceAfterDiscount: 150.0,
         orderDate: "2024-10-17T09:15:00",
         status: "Delivered",
-        shippingAddress: `<div style="font-size: 14px; color: #333;">
+        shippingAddress: `<div style="font-size: 14px; color: #333; background-color: #e3f2fd; padding: 10px;">
                             789 Pine St<br>
                             Austin, TX
                           </div>`,
@@ -66,7 +66,7 @@ export const apiDataItems = [
         priceAfterDiscount: 45.99,
         orderDate: "2024-10-18T15:20:00",
         status: "Cancelled",
-        shippingAddress: `<div style="font-size: 14px; color: #333;">
+        shippingAddress: `<div style="font-size: 14px; color: #333; background-color: #e3f2fd; padding: 10px;">
                             321 Maple Ave<br>
                             Denver, CO
                           </div>`,
@@ -84,7 +84,7 @@ export const apiDataItems = [
         priceAfterDiscount: 10.99,
         orderDate: "2024-10-19T18:45:00",
         status: "Delivered",
-        shippingAddress: `<div style="font-size: 14px; color: #333;">
+        shippingAddress: `<div style="font-size: 14px; color: #333; background-color: #e3f2fd; padding: 10px;">
                             654 Cedar St<br>
                             Miami, FL
                           </div>`,
@@ -102,7 +102,7 @@ export const apiDataItems = [
         priceAfterDiscount: 20.0,
         orderDate: "2024-10-20T11:00:00",
         status: "Shipped",
-        shippingAddress: `<div style="font-size: 14px; color: #333;">
+        shippingAddress: `<div style="font-size: 14px; color: #333; background-color: #e3f2fd; padding: 10px;">
                             987 Walnut St<br>
                             Seattle, WA
                           </div>`,

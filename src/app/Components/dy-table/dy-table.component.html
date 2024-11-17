@@ -133,6 +133,16 @@
 
 </ng-template>
 
+<!-- status Template -->
+<ng-template #statusCellTemplate let-value let-row let-rowIndex="rowIndex" let-column="column">
+  <p [style]="row[column.key] | statusBadge">
+    <span >
+     {{  row[column.key] }}
+    </span>
+  </p>
+
+</ng-template>
+
 <!-- Multi Info Cell Template -->
 <ng-template #multiInfoCellTemplate let-value let-row let-rowIndex="rowIndex" let-column="column">
   <ng-container *ngFor="let item of handleNestedFields(column.key, row)">

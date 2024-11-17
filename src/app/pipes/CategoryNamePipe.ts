@@ -10,3 +10,6 @@ export class CategoryNamePipe implements PipeTransform {
     return category ? category.name : 'Unknown Category';
   }
 }
+
+
+

@@ -8,3 +8,10 @@
 @import "node_modules/bootstrap/scss/mixins.scss";
 @import "node_modules/ngx-easy-table/style.scss";
 @import "~bootstrap/dist/css/bootstrap.rtl.min.css";
+
+.custom-header {
+    text-align: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }

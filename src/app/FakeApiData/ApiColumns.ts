@@ -23,7 +23,7 @@ export const apiColumns: CustomColumn[] = [
         { label: "Price After Discount", fieldKey: "priceAfterDiscount" }
     ], null, "color: green;", "price-column"),
     new CustomColumn("1007", "orderDate", "Order Date", "Select Date", 160, 7, "date", "dateCellTemplate", null, null, "color: blue;", "order-date-column"),
-    new CustomColumn("1008", "status", "Order Status", "Select Status", 150, 8, "dropdown", "dropdownCellTemplate", null, [
+    new CustomColumn("1008", "status", "Order Status", "Select Status", 150, 8, "dropdown", "statusCellTemplate", null, [
         { id: 1, name: "Pending" },
         { id: 2, name: "Shipped" },
         { id: 3, name: "Delivered" },

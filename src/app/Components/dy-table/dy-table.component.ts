@@ -19,6 +19,7 @@ export class DyTableComponent implements OnInit {
   @Output() sortingChanged = new EventEmitter<any>();
 
   @ViewChild('textCellTemplate', { static: true }) textCellTemplate: TemplateRef<any>;
+  @ViewChild('statusCellTemplate', { static: true }) statusCellTemplate: TemplateRef<any>;
   @ViewChild('htmlCellTemplate', { static: true }) htmlCellTemplate: TemplateRef<any>;
   @ViewChild('dateCellTemplate', { static: true }) dateTemplate: TemplateRef<any>;
   @ViewChild('multiInfoCellTemplate', { static: true }) multiInfoCellTemplate: TemplateRef<any>;
@@ -91,6 +92,8 @@ export class DyTableComponent implements OnInit {
         return this.htmlCellTemplate;
       case 'dateCellTemplate':
         return this.dateTemplate;
+      case 'statusCellTemplate':
+        return this.statusCellTemplate;
       case 'multiInfoCellTemplate':
         return this.multiInfoCellTemplate;
       case 'actionCellTemplate':
