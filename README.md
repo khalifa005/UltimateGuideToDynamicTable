@@ -1,7 +1,5 @@
 # UltimateGuideToDynamicTable
 
-
-![image](https://github.com/user-attachments/assets/bea7d51e-1b32-447f-b65c-2bf53dcc6bcf)
 ![image](https://github.com/user-attachments/assets/acdbaafc-9841-4032-af9a-44a638ce1c39)
 
 
